@@ -1,3 +1,4 @@
+SetFactory("OpenCASCADE");
 // define geometry-specific parameters
 mm = 1.e-3;
   
@@ -50,21 +51,14 @@ Physical Volume(1) = {frame[1]};
 
 // create air box around magnets
 BoundingBox; // recompute model bounding box
-cx = (General.MinX + General.MaxX) / 2;
-cy = (General.MinY + General.MaxY) / 2;
-cz = (General.MinZ + General.MaxZ) / 2;
+cx = General.MinX - inf;
+cy = General.MinY - inf;
+cz = General.MinZ - inf;
 lx = 2*inf + General.MaxX - General.MinX;
 ly = 2*inf + General.MaxY - General.MinZ;
 lz = 2*inf + General.MaxZ - General.MinZ;
-p1 = newp; Point (p1) = {cx-lx/2, cy-ly/2, cz-lz/2, lc2};
-p2 = newp; Point (p2) = {cx+lx/2, cy-ly/2, cz-lz/2, lc2};
-l1 = newl; Line(l1) = {p1, p2};
-e1[] = Extrude {0, ly, 0} { Line{l1}; };
-air[] = Extrude {0, 0, lz} { Surface{e1[1]}; };
-slair = newsl; Surface Loop(slair) = Boundary{Volume{air[1]}; };
-slmag = newsl; Surface Loop(slmag) = Boundary{Volume{mag[1]}; };
-slframe = newsl; Surface Loop(slframe) = Boundary{Volume{frame[1]}; };
-vair = newv; Volume(vair) = {slair, slmag};
-Physical Volume(2) = vair; // air
-Physical Surface(3) = {e1[1], air[0], air[2], air[3], air[4], air[5]};
-Delete { Volume{air[1]}; }//
+air = newv; Box(air) = {cx, cy, cz, lx, ly, lz};
+Physical Surface(3) = {Boundary{Volume{air};}};
+v() = BooleanFragments{ Volume{air}; Delete; }{ Volume{mag[1], frame[1]}; Delete; };
+//Physical Volume(2) = {air}; // air
+Physical Volume(2) = v(#v()-1);
