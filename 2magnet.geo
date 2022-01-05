@@ -26,13 +26,14 @@ frameOutside = newv; Box(frameOutside) = {-4*cub, -cub, -hite2, 8*cub, 2*cub, 2*
 frameInside = newv; Box(frameInside) = {-2*cub, -cub-eps, -hite, 4*cub, 2*(cub+eps), 2*hite};
 frameArr() = BooleanDifference{ Volume{frameOutside}; Delete;}{ Volume{frameInside}; Delete;};
 frame = frameArr(#frameArr()-1);
+Printf("Volume %i", mag);
 
 
 // create air box around magnets
 air = newv; Box(air) = {-inf, -inf, -inf, 2*inf, 2*inf, 2*inf};
 airBoundary() = {Boundary{ Volume{air()}; }};
-air = BooleanDifference{Volume{air}; Delete;}{Volume{frame, mag};}; // why is this line needed?
-v() = BooleanFragments{ Volume{air, frame, mag}; Delete;}{};
+air = BooleanDifference{Volume{air}; Delete;}{Volume{frame}; Volume{mag};}; // why is this line needed?
+Coherence;
 
 //set mesh size
 MeshSize{ PointsOf{ Volume{frame, mag}; } } = lc1;
