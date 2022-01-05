@@ -14,25 +14,38 @@ Mesh.Optimize = 1; // optimize quality of tetrahedra
 Mesh.VolumeEdges = 0; // hide volume edges
 Geometry.ExactExtrusion = 0; // to allow rotation of extruded shapes
 Solver.AutoMesh = 2; // always remesh if necessary (don't reuse mesh on disk)
+Geometry.OCCBooleanPreserveNumbering = 1;
 
 //create magnet
 mag = newv; Box(mag) = {-cub, -cub, -hite, 2*cub, 2*cub, 2*hite};
-Physical Volume(0) = {mag};
 
 //create frame
 hite2 = hite + cub;
 eps = 0.001;
 frameOutside = newv; Box(frameOutside) = {-4*cub, -cub, -hite2, 8*cub, 2*cub, 2*hite2};
 frameInside = newv; Box(frameInside) = {-2*cub, -cub-eps, -hite, 4*cub, 2*(cub+eps), 2*hite};
-frameArr = BooleanDifference{ Volume{frameOutside}; Delete; }{ Volume{frameInside}; Delete; };
-frame = newv; frame = frameArr(#frameArr()-1);
-Physical Volume(1) = {frame};
+frameArr() = BooleanDifference{ Volume{frameOutside}; Delete;}{ Volume{frameInside}; Delete;};
+frame = frameArr(#frameArr()-1);
 
-//set mesh size
-MeshSize{ PointsOf{ Volume{mag, frame}; } } = lc1;
 
 // create air box around magnets
 air = newv; Box(air) = {-inf, -inf, -inf, 2*inf, 2*inf, 2*inf};
-Physical Surface(3) = {Boundary{Volume{air};}};
-v() = BooleanFragments{ Volume{air}; Delete; }{ Volume{mag, frame}; Delete; };
-Physical Volume(2) = v(#v()-1);
+airBound() = {Boundary{ Volume{air()}; }};
+Printf("Tags before: ", air, frame, mag);
+v() = BooleanFragments{ Volume{air, frame, mag}; Delete;}{};
+air = v(2); // why is the tag of the airbox not preserved?
+Printf("Tags after: ", v());
+If( #v[] > 3 )
+  Error("Overlapping parts");
+  Abort;
+EndIf
+
+//set mesh size
+MeshSize{ PointsOf{ Volume{frame, mag}; } } = lc1;
+
+
+Physical Volume(0) = {mag};
+Physical Volume(1) = {frame};
+Physical Volume(2) = {air};
+Physical Surface(3) = {11,7,9,12};  // How can I get the outside boundary of the airbox??
+
