@@ -30,22 +30,15 @@ frame = frameArr(#frameArr()-1);
 
 // create air box around magnets
 air = newv; Box(air) = {-inf, -inf, -inf, 2*inf, 2*inf, 2*inf};
-airBound() = {Boundary{ Volume{air()}; }};
-Printf("Tags before: ", air, frame, mag);
+airBoundary() = {Boundary{ Volume{air()}; }};
+air = BooleanDifference{Volume{air}; Delete;}{Volume{frame, mag};}; // why is this line needed?
 v() = BooleanFragments{ Volume{air, frame, mag}; Delete;}{};
-air = v(2); // why is the tag of the airbox not preserved?
-Printf("Tags after: ", v());
-If( #v[] > 3 )
-  Error("Overlapping parts");
-  Abort;
-EndIf
 
 //set mesh size
 MeshSize{ PointsOf{ Volume{frame, mag}; } } = lc1;
 
-
 Physical Volume(0) = {mag};
 Physical Volume(1) = {frame};
 Physical Volume(2) = {air};
-Physical Surface(3) = {11,7,9,12};  // How can I get the outside boundary of the airbox??
+Physical Surface(3) = {airBoundary[]};
 
