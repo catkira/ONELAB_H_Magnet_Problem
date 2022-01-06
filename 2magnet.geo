@@ -21,23 +21,20 @@ mag = newv; Box(mag) = {-cub, -cub, -hite, 2*cub, 2*cub, 2*hite};
 
 //create frame
 hite2 = hite + cub;
-eps = 0.001;
 frameOutside = newv; Box(frameOutside) = {-4*cub, -cub, -hite2, 8*cub, 2*cub, 2*hite2};
-frameInside = newv; Box(frameInside) = {-2*cub, -cub-eps, -hite, 4*cub, 2*(cub+eps), 2*hite};
-frameArr() = BooleanDifference{ Volume{frameOutside}; Delete;}{ Volume{frameInside}; Delete;};
-frame = frameArr(#frameArr()-1);
-Printf("Volume %i", mag);
-
+frameInside = newv; Box(frameInside) = {-2*cub, -cub, -hite, 4*cub, 2*cub, 2*hite};
+frame = BooleanDifference{ Volume{frameOutside}; Delete;}{ Volume{frameInside}; Delete;};
+//frame = frameArr(#frameArr()-1);
 
 // create air box around magnets
 air = newv; Box(air) = {-inf, -inf, -inf, 2*inf, 2*inf, 2*inf};
 airBoundary() = {Boundary{ Volume{air()}; }};
-air = BooleanDifference{Volume{air}; Delete;}{Volume{frame}; Volume{mag};}; // why is this line needed?
-Coherence;
+air = BooleanDifference{Volume{air}; Delete;}{Volume{frame}; Volume{mag};};
 
 //set mesh size
 MeshSize{ PointsOf{ Volume{frame, mag}; } } = lc1;
 
+Coherence;
 Physical Volume(0) = {mag};
 Physical Volume(1) = {frame};
 Physical Volume(2) = {air};

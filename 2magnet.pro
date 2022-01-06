@@ -130,9 +130,9 @@ Formulation {
       { Name phi ; Type Local ; NameOfSpace Hgrad_phi ; }
     }
     Equation {
-      Galerkin { [-mu[]*Dof{d phi} , {d phi} ] ;
+      Integral { [-mu[]*Dof{d phi} , {d phi} ] ;
         In Vol_mu ; Jacobian Vol ; Integration Int ; }
-      Galerkin { [-mu[]*hc[] , {d phi} ] ;
+      Integral { [-mu[]*hc[] , {d phi} ] ;
         In Vol_Magnet ; Jacobian Vol ; Integration Int ; }
     }
   }
@@ -141,9 +141,9 @@ Formulation {
       { Name a  ; Type Local  ; NameOfSpace Hcurl_a ; }
     }
     Equation {
-      Galerkin { [ nu[] * Dof{d a} , {d a} ] ;
+      Integral { [ nu[] * Dof{d a} , {d a} ] ;
         In Vol_mu ; Jacobian Vol ; Integration Int ; }
-      Galerkin { [ -1/mu0 * br[] , {d a} ] ;
+      Integral { [ -1/mu0 * br[] , {d a} ] ;
         In Vol_Magnet ; Jacobian Vol ; Integration Int ; }
     }
   }
