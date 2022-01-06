@@ -24,7 +24,6 @@ hite2 = hite + cub;
 frameOutside = newv; Box(frameOutside) = {-4*cub, -cub, -hite2, 8*cub, 2*cub, 2*hite2};
 frameInside = newv; Box(frameInside) = {-2*cub, -cub, -hite, 4*cub, 2*cub, 2*hite};
 frame = BooleanDifference{ Volume{frameOutside}; Delete;}{ Volume{frameInside}; Delete;};
-//frame = frameArr(#frameArr()-1);
 
 // create air box around magnets
 air = newv; Box(air) = {-inf, -inf, -inf, 2*inf, 2*inf, 2*inf};
